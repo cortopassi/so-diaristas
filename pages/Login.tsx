@@ -14,7 +14,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     if (cpf.length < 11) return alert("Digite um CPF válido");
     setLoading(true);
-    // Simulando envio de código por 2 segundos
+    // Simulação de envio de código por 1.5 segundos
     setTimeout(() => {
       setLoading(false);
       setStep(2);
@@ -24,6 +24,8 @@ const Login: React.FC = () => {
   const handleVerifyCode = (e: React.FormEvent) => {
     e.preventDefault();
     if (code.length < 4) return alert("Digite o código de 4 dígitos");
+    // Em produção, aqui validaria o código no backend
+    alert("Acesso autorizado!");
     navigate('/painel');
   };
 
@@ -77,7 +79,7 @@ const Login: React.FC = () => {
           ) : (
             <form onSubmit={handleVerifyCode} className="space-y-6 animate-in fade-in slide-in-from-right-4">
               <div className="text-center">
-                <p className="text-sm font-medium text-slate-500 mb-6">Enviamos um código de 4 dígitos para o seu contato cadastrado.</p>
+                <p className="text-sm font-medium text-slate-500 mb-6">Enviamos um código de acesso para o seu WhatsApp cadastrado.</p>
                 <div className="flex gap-4 justify-center">
                   <input 
                     required
@@ -94,7 +96,7 @@ const Login: React.FC = () => {
                 type="submit"
                 className="w-full bg-slate-900 text-white py-6 rounded-3xl font-black text-lg shadow-xl hover:bg-blue-600 transition-all"
               >
-                Entrar no Painel
+                Entrar no Sistema
               </button>
               <button 
                 type="button"

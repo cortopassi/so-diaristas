@@ -2,6 +2,7 @@
   "name": "Só Diaristas - Platforma Inteligente",
   "description": "Uma plataforma moderna para conectar profissionais da limpeza com clientes, utilizando IA para orçamentos precisos e busca inteligente.",
   "requestFramePermissions": [
-    "geolocation"
+    "geolocation",
+    "camera"
   ]
 }

@@ -5,7 +5,6 @@ import { useNavigate } from 'react-router-dom';
 const RegisterClient: React.FC = () => {
   const [step, setStep] = useState(1);
   const [locationLoading, setLocationLoading] = useState(false);
-  const [cepLoading, setCepLoading] = useState(false);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -20,7 +19,7 @@ const RegisterClient: React.FC = () => {
       numero: '',
       complemento: '',
       bairro: '',
-      referencia: '',
+      cidade: '',
       lat: null as number | null,
       lng: null as number | null
     }
@@ -29,7 +28,6 @@ const RegisterClient: React.FC = () => {
   const handleCepSearch = async (cep: string) => {
     const cleanCep = cep.replace(/\D/g, '');
     if (cleanCep.length === 8) {
-      setCepLoading(true);
       try {
         const response = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
         const data = await response.json();
@@ -40,31 +38,14 @@ const RegisterClient: React.FC = () => {
               ...prev.endereco,
               rua: data.logradouro,
               bairro: data.bairro,
+              cidade: data.localidade,
               cep: cleanCep
             }
           }));
-        } else {
-          alert("CEP não encontrado.");
         }
-      } catch (error) {
-        console.error("Erro ao buscar CEP", error);
-      } finally {
-        setCepLoading(false);
-      }
+      } catch (err) { console.error(err); }
     }
   };
-
-  const handleNext = () => {
-    if (step === 1) {
-      if (!formData.nome || !formData.cpf || !formData.email || !formData.telefone || !formData.dataNascimento) {
-        alert("Todos os campos de dados pessoais são obrigatórios.");
-        return;
-      }
-    }
-    setStep(step + 1);
-  };
-  
-  const handleBack = () => setStep(step - 1);
 
   const detectAddressLocation = () => {
     setLocationLoading(true);
@@ -72,161 +53,79 @@ const RegisterClient: React.FC = () => {
       navigator.geolocation.getCurrentPosition((position) => {
         setFormData(prev => ({
           ...prev,
-          endereco: {
-            ...prev.endereco,
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          }
+          endereco: { ...prev.endereco, lat: position.coords.latitude, lng: position.coords.longitude }
         }));
         setLocationLoading(false);
-      }, (err) => {
-        console.error(err);
+      }, () => {
         setLocationLoading(false);
-        alert("Para sua segurança e precisão do serviço, o acesso ao GPS é obrigatório.");
+        alert("A geolocalização é OBRIGATÓRIA para sua segurança e para encontrarmos profissionais próximos.");
       });
-    } else {
-      alert("Geolocalização não suportada no seu navegador.");
-      setLocationLoading(false);
     }
+  };
+
+  const handleNext = () => {
+    if (step === 1) {
+      const { nome, cpf, email, telefone, dataNascimento } = formData;
+      if (!nome || !cpf || !email || !telefone || !dataNascimento) {
+        return alert("Todos os campos pessoais são obrigatórios!");
+      }
+    }
+    setStep(step + 1);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.endereco.rua || !formData.endereco.numero || !formData.endereco.bairro || !formData.endereco.referencia) {
-      alert("Todos os campos de endereço são obrigatórios.");
-      return;
+    if (!formData.endereco.rua || !formData.endereco.numero || !formData.endereco.lat) {
+      return alert("Endereço completo e Geolocalização (GPS) são obrigatórios!");
     }
-    if (!formData.endereco.lat) {
-      alert("É obrigatório fixar a localização exata pelo GPS antes de concluir.");
-      return;
-    }
-    alert("Cadastro de cliente realizado com sucesso!");
+    alert("Cadastro concluído com sucesso! Bem-vindo.");
     navigate('/painel');
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-[40px] shadow-2xl overflow-hidden border border-gray-100">
-          <div className="bg-gradient-to-r from-blue-700 to-blue-500 p-10 text-white">
-            <h1 className="text-3xl font-black mb-2">Crie sua conta</h1>
-            <p className="text-blue-100 opacity-80">Rápido, seguro e obrigatório para sua primeira faxina.</p>
-            <div className="mt-8 flex items-center gap-4">
-              {[1, 2].map(i => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm transition-all ${
-                    step === i ? 'bg-white text-blue-600 scale-110 shadow-lg' : 'bg-blue-400/30 text-blue-100'
-                  }`}>
-                    {i}
-                  </div>
-                  {i < 2 && <div className="w-12 h-1 bg-blue-400/30 rounded-full"></div>}
-                </div>
-              ))}
-            </div>
-          </div>
+    <div className="min-h-screen bg-slate-50 py-12 px-4 flex items-center justify-center">
+      <div className="max-w-2xl w-full bg-white rounded-[64px] shadow-2xl overflow-hidden border border-slate-100">
+        <div className="bg-blue-600 p-12 text-white text-center">
+          <h1 className="text-4xl font-black mb-2 tracking-tight">Criar sua Conta</h1>
+          <p className="text-blue-100 font-bold uppercase text-[10px] tracking-[0.2em]">SISTEMA DE ACESSO SEM SENHA</p>
+        </div>
 
-          <form onSubmit={handleSubmit} className="p-10 space-y-8">
-            {step === 1 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-500">
-                <div className="flex justify-between items-center border-b pb-4">
-                  <h2 className="text-xl font-bold text-gray-900">Dados Pessoais</h2>
+        <form onSubmit={handleSubmit} className="p-12 space-y-10">
+          {step === 1 ? (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <input required placeholder="Nome Completo *" className="md:col-span-2 bg-slate-50 p-6 rounded-3xl border-none font-bold outline-none focus:ring-2 focus:ring-blue-500" value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
+                <input required placeholder="CPF *" className="bg-slate-50 p-6 rounded-3xl border-none font-bold outline-none focus:ring-2 focus:ring-blue-500" value={formData.cpf} onChange={e => setFormData({...formData, cpf: e.target.value})} />
+                <input required placeholder="WhatsApp *" className="bg-slate-50 p-6 rounded-3xl border-none font-bold outline-none focus:ring-2 focus:ring-blue-500" value={formData.telefone} onChange={e => setFormData({...formData, telefone: e.target.value})} />
+                <input required type="email" placeholder="E-mail *" className="bg-slate-50 p-6 rounded-3xl border-none font-bold outline-none focus:ring-2 focus:ring-blue-500" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                <div className="md:col-span-2 space-y-2">
+                   <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-4">Data de Nascimento *</label>
+                   <input required type="date" className="w-full bg-slate-50 p-6 rounded-3xl border-none font-bold outline-none focus:ring-2 focus:ring-blue-500" value={formData.dataNascimento} onChange={e => setFormData({...formData, dataNascimento: e.target.value})} />
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Nome Completo</label>
-                    <input required type="text" className="w-full bg-gray-50 border-2 border-transparent p-4 rounded-2xl font-medium" value={formData.nome} onChange={e => setFormData({...formData, nome: e.target.value})} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">CPF</label>
-                    <input required type="text" placeholder="000.000.000-00" className="w-full bg-gray-50 border-2 border-transparent p-4 rounded-2xl font-medium" value={formData.cpf} onChange={e => setFormData({...formData, cpf: e.target.value})} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">E-mail</label>
-                    <input required type="email" className="w-full bg-gray-50 border-2 border-transparent p-4 rounded-2xl font-medium" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">WhatsApp</label>
-                    <input required type="tel" placeholder="(00) 00000-0000" className="w-full bg-gray-50 border-2 border-transparent p-4 rounded-2xl font-medium" value={formData.telefone} onChange={e => setFormData({...formData, telefone: e.target.value})} />
-                  </div>
-                  <div className="space-y-2 md:col-span-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Data de Nascimento</label>
-                    <input required type="date" className="w-full bg-gray-50 border-2 border-transparent p-4 rounded-2xl font-medium" value={formData.dataNascimento} onChange={e => setFormData({...formData, dataNascimento: e.target.value})} />
-                  </div>
-                </div>
-                <button type="button" onClick={handleNext} className="w-full bg-blue-600 text-white py-5 rounded-2xl font-bold shadow-xl flex items-center justify-center gap-2 group">
-                  Próximo: Endereço
+              </div>
+              <button type="button" onClick={handleNext} className="w-full bg-slate-900 text-white py-6 rounded-[32px] font-black text-xl shadow-xl hover:bg-blue-600 transition-all">Continuar para Endereço</button>
+            </div>
+          ) : (
+            <div className="space-y-6 animate-in fade-in slide-in-from-right-4">
+              <div className="flex gap-4">
+                <input required placeholder="Seu CEP *" className="flex-grow bg-slate-100 p-6 rounded-3xl font-black text-2xl outline-none focus:ring-2 focus:ring-blue-500" value={formData.endereco.cep} onChange={e => { setFormData({...formData, endereco: {...formData.endereco, cep: e.target.value}}); handleCepSearch(e.target.value); }} />
+                <button type="button" onClick={detectAddressLocation} className={`px-8 rounded-3xl font-black text-[10px] uppercase transition-all shadow-lg ${formData.endereco.lat ? 'bg-green-500 text-white' : 'bg-blue-600 text-white'}`}>
+                  {locationLoading ? '...' : formData.endereco.lat ? 'GPS OK ✓' : 'Ativar GPS *'}
                 </button>
               </div>
-            )}
-
-            {step === 2 && (
-              <div className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-500">
-                <div className="flex justify-between items-center border-b pb-4">
-                  <h2 className="text-xl font-bold text-gray-900">Local da Limpeza</h2>
-                </div>
-
-                <div className="space-y-2">
-                   <label className="text-xs font-black text-blue-600 uppercase tracking-widest">Digite seu CEP</label>
-                   <div className="relative">
-                      <input 
-                        required 
-                        type="text" 
-                        placeholder="00000-000"
-                        className="w-full bg-blue-50 border-2 border-blue-100 p-5 rounded-3xl font-black text-2xl outline-none focus:border-blue-500" 
-                        value={formData.endereco.cep} 
-                        onChange={e => {
-                          const val = e.target.value;
-                          setFormData({...formData, endereco: {...formData.endereco, cep: val}});
-                          if (val.replace(/\D/g, '').length === 8) handleCepSearch(val);
-                        }}
-                      />
-                      {cepLoading && <div className="absolute right-6 top-1/2 -translate-y-1/2 animate-spin h-6 w-6 border-4 border-blue-500 border-t-transparent rounded-full"></div>}
-                   </div>
-                </div>
-                
-                <div className={`grid grid-cols-1 md:grid-cols-4 gap-4 transition-opacity ${cepLoading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-                  <div className="md:col-span-3 space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Rua / Avenida</label>
-                    <input required type="text" className="w-full bg-gray-50 border-none p-4 rounded-2xl font-medium" value={formData.endereco.rua} onChange={e => setFormData({...formData, endereco: {...formData.endereco, rua: e.target.value}})} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Nº</label>
-                    <input required type="text" className="w-full bg-gray-50 border-none p-4 rounded-2xl font-medium" value={formData.endereco.numero} onChange={e => setFormData({...formData, endereco: {...formData.endereco, numero: e.target.value}})} />
-                  </div>
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Apto / Bloco</label>
-                    <input type="text" className="w-full bg-gray-50 border-none p-4 rounded-2xl font-medium" value={formData.endereco.complemento} onChange={e => setFormData({...formData, endereco: {...formData.endereco, complemento: e.target.value}})} />
-                  </div>
-                  <div className="md:col-span-2 space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Bairro</label>
-                    <input required type="text" className="w-full bg-gray-50 border-none p-4 rounded-2xl font-medium" value={formData.endereco.bairro} onChange={e => setFormData({...formData, endereco: {...formData.endereco, bairro: e.target.value}})} />
-                  </div>
-                  <div className="md:col-span-4 space-y-2">
-                    <label className="text-xs font-bold text-gray-400 uppercase tracking-widest">Ponto de Referência</label>
-                    <textarea required className="w-full bg-gray-50 border-none p-4 rounded-2xl font-medium h-24 resize-none" value={formData.endereco.referencia} onChange={e => setFormData({...formData, endereco: {...formData.endereco, referencia: e.target.value}})} />
-                  </div>
-                </div>
-
-                <div className="bg-blue-50 p-6 rounded-[32px] border-2 border-dashed border-blue-200">
-                  <div className="flex justify-between items-center">
-                    <div>
-                      <h4 className="font-bold text-blue-900 text-sm">GPS do Imóvel</h4>
-                      <p className="text-xs text-blue-600">Obrigatório para segurança.</p>
-                    </div>
-                    <button type="button" onClick={detectAddressLocation} className="bg-white text-blue-600 px-4 py-2 rounded-xl text-xs font-black shadow-sm flex items-center gap-2">
-                      {locationLoading ? 'Buscando...' : formData.endereco.lat ? 'Localização OK!' : 'Fixar GPS'}
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 pt-4">
-                  <button type="button" onClick={handleBack} className="flex-1 bg-gray-100 text-gray-600 py-5 rounded-2xl font-bold">Voltar</button>
-                  <button type="submit" className="flex-[2] bg-blue-600 text-white py-5 rounded-2xl font-bold shadow-xl">Concluir</button>
-                </div>
+              <div className="grid grid-cols-4 gap-4">
+                <input required placeholder="Sua Rua *" className="col-span-3 bg-slate-50 p-5 rounded-2xl font-bold" value={formData.endereco.rua} onChange={e => setFormData({...formData, endereco: {...formData.endereco, rua: e.target.value}})} />
+                <input required placeholder="Nº *" className="bg-white border-2 border-blue-100 p-5 rounded-2xl font-bold outline-none focus:border-blue-500" value={formData.endereco.numero} onChange={e => setFormData({...formData, endereco: {...formData.endereco, numero: e.target.value}})} />
               </div>
-            )}
-          </form>
-        </div>
+              <input placeholder="Complemento / Bloco" className="w-full bg-slate-50 p-5 rounded-2xl font-bold" value={formData.endereco.complemento} onChange={e => setFormData({...formData, endereco: {...formData.endereco, complemento: e.target.value}})} />
+              
+              <div className="flex gap-4">
+                <button type="button" onClick={() => setStep(1)} className="flex-1 bg-slate-100 py-6 rounded-[32px] font-bold text-slate-400">Voltar</button>
+                <button type="submit" className="flex-[2] bg-blue-600 text-white py-6 rounded-[32px] font-black text-xl shadow-2xl">Finalizar Cadastro</button>
+              </div>
+            </div>
+          )}
+        </form>
       </div>
     </div>
   );

@@ -28,7 +28,38 @@ const AdminPanel: React.FC = () => {
     await new Promise(resolve => setTimeout(resolve, 1500));
     
     const migratedPros: Diarista[] = [
-      { id: 'mig_1', nome: 'Marta Souza (Legado)', email: 'marta@old.com', cpf: '222.333.444-55', telefone: '11988776655', avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200', nota: 4.8, avaliacoes: 120, taxaCancelamento: 0, precoBase: 180, especialidades: ['limpeza_padrao'], restricoes: 'Dados legados.', bio: 'Migrada do sistema antigo.', bairro: 'Pendente', cidade: 'São Paulo', tipoPreco: 'periodo', saldoDevedor: 0, statusAprovacao: 'pendente' }
+      // Fixed: Change 'periodo' to 'servico', removed non-existent saldoDevedor, and added missing required properties.
+      { 
+        id: 'mig_1', 
+        nome: 'Marta Souza (Legado)', 
+        email: 'marta@old.com', 
+        cpf: '222.333.444-55', 
+        telefone: '11988776655', 
+        avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=200', 
+        nota: 4.8, 
+        avaliacoes: 120, 
+        taxaCancelamento: 0, 
+        precoBase: 180, 
+        especialidades: ['limpeza_padrao'], 
+        restricoes: 'Dados legados.', 
+        bio: 'Migrada do sistema antigo.', 
+        bairro: 'Pendente', 
+        cidade: 'São Paulo', 
+        estado: 'SP',
+        cep: '00000-000',
+        numero: 'SN',
+        tipoPreco: 'servico', 
+        statusAprovacao: 'pendente',
+        disponibilidade: [],
+        termoAceite: true,
+        // Adding missing required properties for Diarista interface
+        lat: -23.5505,
+        lng: -46.6333,
+        docValidado: false,
+        antecedentesValidado: false,
+        residenciaValidado: false,
+        fotoValidada: false
+      }
     ];
 
     setProsInModeration(prev => [...prev, ...migratedPros]);
