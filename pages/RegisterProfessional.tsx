@@ -125,17 +125,17 @@ const RegisterProfessional: React.FC = () => {
 
                <div className="grid gap-6">
                   {/* CPF Upload */}
-                  <div className="relative">
+                  <div className="relative group">
                     <input type="file" id="cpf-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'fotoCpf')} accept="image/*,.pdf" />
-                    <label htmlFor="cpf-upload" className={`flex items-center justify-between p-6 rounded-[24px] border-2 border-dashed cursor-pointer transition-all ${formData.documentos.fotoCpf ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-blue-300'}`}>
+                    <label htmlFor="cpf-upload" className={`flex items-center justify-between p-6 rounded-[24px] border-2 border-dashed cursor-pointer transition-all ${formData.documentos.fotoCpf ? 'bg-green-50 border-green-400' : 'bg-slate-50 border-slate-200 hover:border-blue-400'}`}>
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm ${formData.documentos.fotoCpf ? 'bg-green-500 text-white' : 'bg-white text-slate-400'}`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm transition-all ${formData.documentos.fotoCpf ? 'bg-green-500 text-white scale-110' : 'bg-white text-slate-400'}`}>
                           {formData.documentos.fotoCpf ? '✓' : '🪪'}
                         </div>
                         <div>
                           <p className="font-black text-slate-900 text-sm">Documento de Identidade (CPF/RG)</p>
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            {formData.documentos.fotoCpf ? formData.documentos.fotoCpf.name : 'Clique para selecionar arquivo'}
+                            {formData.documentos.fotoCpf ? formData.documentos.fotoCpf.name : 'Toque para enviar foto ou PDF'}
                           </p>
                         </div>
                       </div>
@@ -143,43 +143,63 @@ const RegisterProfessional: React.FC = () => {
                   </div>
 
                   {/* Endereço Upload */}
-                  <div className="relative">
+                  <div className="relative group">
                     <input type="file" id="address-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'comprovanteEndereco')} accept="image/*,.pdf" />
-                    <label htmlFor="address-upload" className={`flex items-center justify-between p-6 rounded-[24px] border-2 border-dashed cursor-pointer transition-all ${formData.documentos.comprovanteEndereco ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-blue-300'}`}>
+                    <label htmlFor="address-upload" className={`flex items-center justify-between p-6 rounded-[24px] border-2 border-dashed cursor-pointer transition-all ${formData.documentos.comprovanteEndereco ? 'bg-green-50 border-green-400' : 'bg-slate-50 border-slate-200 hover:border-blue-400'}`}>
                       <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm ${formData.documentos.comprovanteEndereco ? 'bg-green-500 text-white' : 'bg-white text-slate-400'}`}>
+                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm transition-all ${formData.documentos.comprovanteEndereco ? 'bg-green-500 text-white scale-110' : 'bg-white text-slate-400'}`}>
                           {formData.documentos.comprovanteEndereco ? '✓' : '🏠'}
                         </div>
                         <div>
                           <p className="font-black text-slate-900 text-sm">Comprovante de Endereço</p>
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            {formData.documentos.comprovanteEndereco ? formData.documentos.comprovanteEndereco.name : 'Contas recentes (Água/Luz)'}
+                            {formData.documentos.comprovanteEndereco ? formData.documentos.comprovanteEndereco.name : 'Água, Luz ou Telefone (Últimos 3 meses)'}
                           </p>
                         </div>
                       </div>
                     </label>
                   </div>
 
-                  {/* Antecedentes Upload */}
-                  <div className="relative">
-                    <input type="file" id="background-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'antecedentes')} accept="image/*,.pdf" />
-                    <label htmlFor="background-upload" className={`flex items-center justify-between p-6 rounded-[24px] border-2 border-dashed cursor-pointer transition-all ${formData.documentos.antecedentes ? 'bg-green-50 border-green-200' : 'bg-slate-50 border-slate-200 hover:border-blue-300'}`}>
-                      <div className="flex items-center gap-4">
-                        <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm ${formData.documentos.antecedentes ? 'bg-green-500 text-white' : 'bg-white text-slate-400'}`}>
-                          {formData.documentos.antecedentes ? '✓' : '📋'}
+                  {/* Antecedentes Upload + Helper Link */}
+                  <div className="space-y-3">
+                    <div className="relative group">
+                      <input type="file" id="background-upload" className="hidden" onChange={(e) => handleFileUpload(e, 'antecedentes')} accept="image/*,.pdf" />
+                      <label htmlFor="background-upload" className={`flex items-center justify-between p-6 rounded-[24px] border-2 border-dashed cursor-pointer transition-all ${formData.documentos.antecedentes ? 'bg-green-50 border-green-400' : 'bg-slate-50 border-slate-200 hover:border-blue-400'}`}>
+                        <div className="flex items-center gap-4">
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl shadow-sm transition-all ${formData.documentos.antecedentes ? 'bg-green-500 text-white scale-110' : 'bg-white text-slate-400'}`}>
+                            {formData.documentos.antecedentes ? '✓' : '📋'}
+                          </div>
+                          <div>
+                            <p className="font-black text-slate-900 text-sm">Certidão de Antecedentes Criminais</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                              {formData.documentos.antecedentes ? formData.documentos.antecedentes.name : 'Certidão emitida pela Polícia Federal'}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-black text-slate-900 text-sm">Antecedentes Criminais</p>
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            {formData.documentos.antecedentes ? formData.documentos.antecedentes.name : 'Certidão de antecedentes'}
-                          </p>
+                      </label>
+                    </div>
+                    
+                    <div className="bg-amber-50 border border-amber-100 p-5 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                           <span className="text-2xl">💡</span>
+                           <p className="text-[11px] font-bold text-amber-900 leading-tight uppercase tracking-tight">
+                              Não tem a certidão? Você pode emitir agora <br className="hidden md:block"/> gratuitamente no site da Polícia Federal.
+                           </p>
                         </div>
-                      </div>
-                    </label>
+                        <a 
+                          href="https://www.gov.br/pf/pt-br/assuntos/antecedentes-criminais" 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="whitespace-nowrap bg-white text-amber-600 px-5 py-2.5 rounded-2xl text-[10px] font-black uppercase tracking-widest border border-amber-200 hover:bg-amber-500 hover:text-white transition-all shadow-sm flex items-center gap-2"
+                        >
+                          Emitir Certidão Agora
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                        </a>
+                    </div>
                   </div>
                </div>
 
-               <div className="flex gap-4">
+               <div className="flex gap-4 pt-6">
                   <button onClick={() => setStep(2)} className="flex-1 bg-slate-100 py-6 rounded-3xl font-bold text-slate-400 uppercase text-xs">Voltar</button>
                   <button 
                     onClick={() => {
